@@ -1,0 +1,146 @@
+{% include 'header.html' %}
+<div class="mast">
+    <div class="container">
+        <div class="row">
+        <div class="col-md-9">
+            <span class="badge badge-success">Resource</span>
+            {% if resource.ghost %}
+            <strike><span class="uuid-mast" style="margin-top:0; padding-top:0;">{{ resource.id }}</span></strike>
+            {% else %}
+            <span class="uuid-mast" style="margin-top:0; padding-top:0;">{{ resource.id }}</span>
+            {% endif %}
+            {% if resource.ghost %}
+            <h2>{{ resource.full_path }} (Deleted)</h2>
+            {% else %}
+            <h2>{{ resource.full_path }}</h2>
+            {% endif %}
+        </div>
+        <div class="col-md-3 text-right">
+            <span class="badge badge-warning">Current Hash</span>
+            <span class="uuid-mast">{{ resource.current_hash }}</span>
+            <span class="badge badge-warning">Current Size</span>
+            <span class="uuid-mast">{{ resource.current_size | filesizeformat }}</span>
+        </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+<h3>History</h3>
+<table class="table table-hover table-active">
+    <thead class="thead-inverse">
+        <tr>
+            <th width="5%"></th>
+            <th>Command</th>
+            <th class="text-right" width="20%">Timestamp</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% if resource.effects %}
+    {% for effect in resource.effects.all %}
+    <tr>
+        <td class="text-center"><b>-</b></td>
+        <td>
+            <span class="uuid-mast" style="margin-top:0; padding-top:0; display:block;"><a href="{% url 'detail_command' effect.command.id %}">{{ effect.command.id }}</a></span>
+            <code>{{ effect.command.cmd_str }}</code>
+        </td>
+        <td>{{ effect.command.finished_at }}</td>
+    </tr>
+    {% endfor %}
+    {% else %}
+    <tr>
+        <td>No history.</td>
+    </tr>
+    {% endif %}
+    </tbody>
+</table>
+
+<hr>
+
+<div class="row">
+<div class="col-md-6">
+    <h3>Hash Friends</h3>
+    <table class="table table-hover table-active">
+        <thead class="thead-inverse">
+            <tr>
+                <th>Path & Last Command</th>
+                <th class="text-right" width="20%">Last Seen</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if resource.hash_friends %}
+        {% for res in resource.hash_friends %}
+        <tr>
+            <td>
+                <b><a href="{% url 'resource_detail' res.id %}">{{ res.full_path }}</a></b><br>
+                <code>{{ res.last_command_effect.command.cmd_str }}</code>
+            </td>
+            <td class="text-right">{{ res.last_command_effect.command.finished_at }}</td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td>No friends :(</td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
+    <hr>
+    <h3>Ghosts</h3>
+    <table class="table table-hover table-active">
+        <thead class="thead-inverse">
+            <tr>
+                <th>Path</th>
+                <th class="text-right" width="20%">Deleted On</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if resource.ghosts %}
+        {% for res_ghost in resource.ghosts %}
+        <tr>
+            <td>
+                <b><a href="{% url 'resource_detail' res_ghost.id %}">{{ res_ghost.full_path }}</a></b><br>
+            </td>
+            <td class="text-right">{{ res_ghost.last_command_effect.command.finished_at }}</td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td>This file is not haunted.</td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+<div class="col-md-6">
+    <h3>Metadata</h3>
+    <table class="table table-hover table-active">
+        <thead class="thead-inverse">
+            <tr>
+                <th>Command</th>
+                <th>Tag</th>
+                <th>Name</th>
+                <th>Value</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for metadatum in resource.metadata %}
+        <tr>
+            <td>{{ metadatum.command }}</td>
+            <td>{{ metadatum.meta_tag }}</td>
+            <td>{{ metadatum.meta_name }}</td>
+            <td>{{ metadatum.translate }}</td>
+            <td>{{ metadatum.timestamp }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+</div>
+
+{% include 'footer.html' %}
+
