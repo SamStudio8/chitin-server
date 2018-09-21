@@ -1,0 +1,7 @@
+*.pyc                                                    
+*~                                                       
+db.sqlite3                                               
+/static                                                  
+/ignore                                                  
+*settings.py
+__pycache__                                              
