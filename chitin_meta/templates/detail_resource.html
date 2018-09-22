@@ -1,5 +1,7 @@
+{% load humanize %}
+
 {% include 'header.html' %}
-<div class="mast">
+<div class="mast" style="margin-bottom:0">
     <div class="container">
         <div class="row">
         <div class="col-md-9">
@@ -9,11 +11,8 @@
             {% else %}
             <span class="uuid-mast" style="margin-top:0; padding-top:0;">{{ resource.id }}</span>
             {% endif %}
-            {% if resource.ghost %}
-            <h2>{{ resource.full_path }} (Deleted)</h2>
-            {% else %}
-            <h2>{{ resource.full_path }}</h2>
-            {% endif %}
+            <h2>{{ resource.basename }}</h2>
+
         </div>
         <div class="col-md-3 text-right">
             <span class="badge badge-warning">Current Hash</span>
@@ -22,6 +21,16 @@
             <span class="uuid-mast">{{ resource.current_size | filesizeformat }}</span>
         </div>
         </div>
+    </div>
+</div>
+<div class="mast2">
+    <div class="container">
+        {% if resource.ghost %}
+            <span class="badge badge-danger">Deleted</span>
+        {% endif %}
+            <a href="{% url 'list_resources' resource.current_node.id %}"><span class="badge" style="background-color:#000">{{ resource.current_node.name }}</span></a> ►
+            <a href="{% url 'list_resource_group' resource.current_master_group.id %}"><span class="badge" style="background-color:#000">{{ resource.dirname }}</span></a> ►
+            <span class="badge badge-success">{{ resource.basename }}</span>
     </div>
 </div>
 
@@ -33,6 +42,8 @@
         <tr>
             <th width="5%"></th>
             <th>Command</th>
+            <th>User</th>
+            <th>Exit</th>
             <th class="text-right" width="20%">Timestamp</th>
         </tr>
     </thead>
@@ -40,12 +51,20 @@
     {% if resource.effects %}
     {% for effect in resource.effects.all %}
     <tr>
-        <td class="text-center"><b>-</b></td>
+        <td class="text-center"><b>{{ effect.effect_status }}</b></td>
         <td>
             <span class="uuid-mast" style="margin-top:0; padding-top:0; display:block;"><a href="{% url 'detail_command' effect.command.id %}">{{ effect.command.id }}</a></span>
             <code>{{ effect.command.cmd_str }}</code>
         </td>
-        <td>{{ effect.command.finished_at }}</td>
+        <td>{{ effect.command.user }}</td>
+        <td>
+            {% if effect.command.return_code == 0 %}
+                <span class="badge badge-success">{{ effect.command.return_code }}</span>
+            {% else %}
+                <span class="badge badge-danger">{{ effect.command.return_code }}</span>
+            {% endif %}
+        </td>
+        <td class="text-right">{{ effect.command.finished_at }}<br/>{{ effect.command.finished_at | naturaltime }}</td>
     </tr>
     {% endfor %}
     {% else %}
@@ -61,11 +80,12 @@
 <div class="row">
 <div class="col-md-6">
     <h3>Hash Friends</h3>
+    <p>Files with the same hash that can be fetched by chitin</p>
     <table class="table table-hover table-active">
         <thead class="thead-inverse">
             <tr>
-                <th>Path & Last Command</th>
-                <th class="text-right" width="20%">Last Seen</th>
+                <th>Path</th>
+                <th class="text-right" width="25%">Last Touched</th>
             </tr>
         </thead>
         <tbody>
@@ -73,10 +93,9 @@
         {% for res in resource.hash_friends %}
         <tr>
             <td>
-                <b><a href="{% url 'resource_detail' res.id %}">{{ res.full_path }}</a></b><br>
-                <code>{{ res.last_command_effect.command.cmd_str }}</code>
+                <b><a href="{% url 'detail_resource' res.id %}">{{ res.full_path }}</a></b><br>
             </td>
-            <td class="text-right">{{ res.last_command_effect.command.finished_at }}</td>
+            <td class="text-right">{{ res.last_effect.command.finished_at | naturaltime }}</td>
         </tr>
         {% endfor %}
         {% else %}
@@ -89,11 +108,12 @@
 
     <hr>
     <h3>Ghosts</h3>
+    <p>Files that used to exist on this path, that were deleted in the past</p>
     <table class="table table-hover table-active">
         <thead class="thead-inverse">
             <tr>
                 <th>Path</th>
-                <th class="text-right" width="20%">Deleted On</th>
+                <th class="text-right" width="20%">Deleted</th>
             </tr>
         </thead>
         <tbody>
@@ -101,14 +121,14 @@
         {% for res_ghost in resource.ghosts %}
         <tr>
             <td>
-                <b><a href="{% url 'resource_detail' res_ghost.id %}">{{ res_ghost.full_path }}</a></b><br>
+                <b><a href="{% url 'detail_resource' res_ghost.id %}">{{ res_ghost.full_path }}</a></b><br>
             </td>
-            <td class="text-right">{{ res_ghost.last_command_effect.command.finished_at }}</td>
+            <td class="text-right">{{ res_ghost.last_effect.command.finished_at | naturaltime }}</td>
         </tr>
         {% endfor %}
         {% else %}
         <tr>
-            <td>This file is not haunted.</td>
+            <td colspan="2">This file is not haunted.</td>
         </tr>
         {% endif %}
         </tbody>
@@ -116,6 +136,7 @@
 </div>
 <div class="col-md-6">
     <h3>Metadata</h3>
+    <p>Extra information tagged to this Resource</p>
     <table class="table table-hover table-active">
         <thead class="thead-inverse">
             <tr>
@@ -127,6 +148,7 @@
             </tr>
         </thead>
         <tbody>
+        {% if resource.metadata %}
         {% for metadatum in resource.metadata %}
         <tr>
             <td>{{ metadatum.command }}</td>
@@ -136,6 +158,11 @@
             <td>{{ metadatum.timestamp }}</td>
         </tr>
         {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="5">Not much to say.</td>
+            </tr>
+        {% endif %}
         </tbody>
     </table>
 

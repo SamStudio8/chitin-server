@@ -36,11 +36,21 @@ class Resource(models.Model):
     current_master_group = models.ForeignKey('ResourceGroup') # represents the physical directory
 
     def __str__(self):
-        return "%s (%s)" % (self.full_path, self.current_hash[-5:])
+        return "%s (%s:%s)" % (self.full_path, str(self.id)[-5:], self.current_hash[-5:])
 
     @property
     def full_path(self):
-        return "chitin://%s:%s" % (self.current_node.name, self.current_path)
+        return "%s:%s" % (self.current_node.name, self.current_path)
+
+
+    @property
+    def basename(self):
+        return os.path.basename(self.current_path)
+
+    @property
+    def dirname(self):
+        return os.path.dirname(self.current_path)
+
 
     @property
     def hash_friends(self):
@@ -74,9 +84,15 @@ class Resource(models.Model):
     @property
     def metadata(self):
         #TODO Future, flatten (tag, name) records if they have been 'overwritten'
-        return MetaRecord.objects.filter(
-                resource=self,
-        ).order_by('-timestamp')
+        return self.metarecord_set.all().order_by('-timestamp')
+
+    @property
+    def effects(self):
+        return self.commandonresource_set.all().order_by('-command__finished_at')
+
+    @property
+    def last_effect(self):
+        return self.effects.last()
 
 class Command(models.Model):
 
@@ -88,16 +104,18 @@ class Command(models.Model):
     # group_uuid
     # group_order
 
-    # queued_at
-    # started_at
-    # finished_at
+    #NOTE Could eventually migrate User to an actual User model,
+    #     additionally it could be abstracted to the eventual CommandGroup model
+    user = models.CharField(max_length=32)
+
+    queued_at   = models.DateTimeField()
+    started_at  = models.DateTimeField()
+    finished_at = models.DateTimeField()
 
     @property
     def metadata(self):
         #TODO Future, flatten (tag, name) records if they have been 'overwritten'
-        return MetaRecord.objects.filter(
-                command=self,
-        ).order_by('-timestamp')
+        return self.metarecord_set.all().order_by('-timestamp')
 
 
 class CommandOnResource(models.Model):
@@ -105,13 +123,23 @@ class CommandOnResource(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
-    resource = models.ForeignKey('Resource', related_name="effects")
+    resource = models.ForeignKey('Resource')
     command = models.ForeignKey('Command', related_name="effects")
 
     resource_hash = models.CharField(max_length=64)
     resource_size = models.BigIntegerField(default=0)
 
-    # effect_status
+    effect_status = models.CharField(max_length=1)
+
+    @property
+    def prev(self):
+        """Get the previous effect for the associated Resource"""
+        return self.resource.commandonresource_set.filter(command__finished_at__lt = self.command.finished_at).order_by('command__finished_at').last()
+
+    @property
+    def next(self):
+        """Get the next effect for the associated Resource"""
+        return self.resource.commandonresource_set,filter(command__finished_at__gt = self.command.finished_at).order_by('command__finished_at').first()
 
 class MetaRecord(models.Model):
     """Metadata pertaining to:
