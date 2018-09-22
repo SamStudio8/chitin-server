@@ -99,7 +99,7 @@ class Command(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     cmd_str = models.CharField(max_length=512)
-    return_code = models.SmallIntegerField()
+    return_code = models.SmallIntegerField(blank=True, null=True)
 
     # group_uuid
     # group_order
@@ -109,8 +109,8 @@ class Command(models.Model):
     user = models.CharField(max_length=32)
 
     queued_at   = models.DateTimeField()
-    started_at  = models.DateTimeField()
-    finished_at = models.DateTimeField()
+    started_at  = models.DateTimeField(blank=True, null=True)
+    finished_at = models.DateTimeField(blank=True, null=True)
 
     @property
     def metadata(self):
