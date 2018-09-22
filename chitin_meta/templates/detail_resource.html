@@ -15,9 +15,9 @@
 
         </div>
         <div class="col-md-3 text-right">
-            <span class="badge badge-warning">Current Hash</span>
+            <span class="badge badge-warning">{% if resource.ghost %}Last{% else %}Current{% endif %} Hash</span>
             <span class="uuid-mast">{{ resource.current_hash }}</span>
-            <span class="badge badge-warning">Current Size</span>
+            <span class="badge badge-warning">{% if resource.ghost %}Last{% else %}Current{% endif %} Size</span>
             <span class="uuid-mast">{{ resource.current_size | filesizeformat }}</span>
         </div>
         </div>

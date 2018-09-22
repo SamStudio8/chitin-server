@@ -22,6 +22,13 @@ class ResourceGroup(models.Model):
     # A Resource must have a ResourceGroup, but can be attached to other groups as 'tags'.
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
+    current_node = models.ForeignKey('Node', blank=True, null=True)
+    current_path = models.CharField(max_length=512, blank=True, null=True)
+
+    @classmethod
+    def get_by_path(cls, node_uuid, path):
+        return cls.objects.filter(current_node__id = node_uuid, current_path = path).first() #TODO first?
+
 
 class Resource(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -31,9 +38,13 @@ class Resource(models.Model):
     current_hash = models.CharField(max_length=64)
     current_size = models.BigIntegerField(default=0)
 
-    ghost = models.BooleanField()
+    ghost = models.BooleanField(default=False)
 
     current_master_group = models.ForeignKey('ResourceGroup') # represents the physical directory
+
+    @classmethod
+    def get_by_path(cls, node_uuid, path):
+        return cls.objects.filter(current_node__id = node_uuid, current_path = path).first() #TODO first?
 
     def __str__(self):
         return "%s (%s:%s)" % (self.full_path, str(self.id)[-5:], self.current_hash[-5:])
@@ -111,6 +122,10 @@ class Command(models.Model):
     queued_at   = models.DateTimeField()
     started_at  = models.DateTimeField(blank=True, null=True)
     finished_at = models.DateTimeField(blank=True, null=True)
+
+
+    def __str__(self):
+        return "%s (%s)" % (self.cmd_str[:40], str(self.queued_at))
 
     @property
     def metadata(self):
