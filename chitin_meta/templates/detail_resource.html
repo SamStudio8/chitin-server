@@ -28,8 +28,8 @@
         {% if resource.ghost %}
             <span class="badge badge-danger">Deleted</span>
         {% endif %}
-            <a href="{% url 'list_resources' resource.current_node.id %}"><span class="badge" style="background-color:#000">{{ resource.current_node.name }}</span></a> ►
-            <a href="{% url 'list_resource_group' resource.current_master_group.id %}"><span class="badge" style="background-color:#000">{{ resource.dirname }}</span></a> ►
+            <a href="{% url 'list_groups' resource.current_node.id %}"><span class="badge" style="background-color:#000">{{ resource.current_node.name }}</span></a> ►
+            <a href="{% url 'list_resources' resource.current_master_group.id %}"><span class="badge" style="background-color:#000">{{ resource.dirname }}</span></a> ►
             <span class="badge badge-success">{{ resource.basename }}</span>
     </div>
 </div>
@@ -40,21 +40,30 @@
 <table class="table table-hover table-active">
     <thead class="thead-inverse">
         <tr>
-            <th width="5%"></th>
+            <th></th>
             <th>Command</th>
             <th>User</th>
             <th>Exit</th>
-            <th class="text-right" width="20%">Timestamp</th>
+            <th class="text-right" width="25%">Timestamp</th>
         </tr>
     </thead>
     <tbody>
     {% if resource.effects %}
     {% for effect in resource.effects.all %}
     <tr>
-        <td class="text-center"><b>{{ effect.effect_status }}</b></td>
+        <td class="text-center">
+            <span class="badge" style="margin: 10px 0 0px 0; font-size:1.1em; background-color:#000">
+            <b>{{ effect.effect_status }}</b>
+            </span>
+        </td>
         <td>
-            <span class="uuid-mast" style="margin-top:0; padding-top:0; display:block;"><a href="{% url 'detail_command' effect.command.id %}">{{ effect.command.id }}</a></span>
-            <code>{{ effect.command.cmd_str }}</code>
+            <a href="{% url 'detail_command' effect.command.id %}">
+                <span class="badge badge-danger" style="margin: 0px 0 0px 0;">
+                        <span style="font-size:1.1em;">&#128065;</span>
+                        <span class="little-text"> {{ effect.command.id }}</span>
+                </span>
+            </a>
+            <pre>{{ effect.command.cmd_str | escape }}</pre>
         </td>
         <td>{{ effect.command.user }}</td>
         <td>
@@ -100,7 +109,7 @@
         {% endfor %}
         {% else %}
         <tr>
-            <td>No friends :(</td>
+            <td colspan=2>No friends :(</td>
         </tr>
         {% endif %}
         </tbody>
@@ -112,7 +121,7 @@
     <table class="table table-hover table-active">
         <thead class="thead-inverse">
             <tr>
-                <th>UUID</th>
+                <th>Resource</th>
                 <th class="text-right" width="25%">Deleted</th>
             </tr>
         </thead>
@@ -121,7 +130,13 @@
         {% for res_ghost in resource.ghosts %}
         <tr>
             <td>
-                <b><a href="{% url 'detail_resource' res_ghost.id %}">{{ res_ghost.id }}</a></b><br>
+                <a href="{% url 'detail_resource' res_ghost.id %}">
+                    <span class="badge badge-success" style="margin: 0px 0 0px 0;">
+                            <span style="font-size:1.1em;">&#128065;</span>
+                            <span class="little-text"> {{ res_ghost.id }}</span>
+                    </span>
+                </a>
+                <code>{{ res_ghost.current_hash }}</code> ({{ res_ghost.current_size | filesizeformat }})
             </td>
             <td class="text-right">{{ res_ghost.last_effect.command.finished_at | naturaltime }}</td>
         </tr>

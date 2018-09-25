@@ -9,7 +9,7 @@
     {% for node in nodes %}
     <tr>
         <td><b>{{ node.name }}</b><br/>
-        <a href="{% url 'list_resources' node.id %}">{{ node.id }}</a></td>
+        <a href="{% url 'list_groups' node.id %}">{{ node.id }}</a></td>
     </tr>
     {% endfor %}
     </tbody>

@@ -16,11 +16,18 @@ def home(request):
         "nodes": models.Node.objects.all()
     })
 
-def list_resources(request, node_uuid):
+def list_node_groups(request, node_uuid):
     node = get_object_or_404(models.Node, id=node_uuid)
-    return render(request, 'list_resources.html', {
-        "resources": models.Resource.objects.filter(current_node = node),
+    return render(request, 'list_groups.html', {
+        "groups": models.ResourceGroup.objects.filter(current_node = node),
         "node": node,
+    })
+
+def list_group_resources(request, group_uuid):
+    group = get_object_or_404(models.ResourceGroup, id=group_uuid)
+    return render(request, 'list_resources.html', {
+        "resources": models.Resource.objects.filter(current_master_group = group, ghost = False),
+        "group": group,
     })
 
 def detail_resource(request, resource_uuid):
