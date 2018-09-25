@@ -44,7 +44,7 @@ class Resource(models.Model):
 
     @classmethod
     def get_by_path(cls, node_uuid, path):
-        return cls.objects.filter(current_node__id = node_uuid, current_path = path).first() #TODO first?
+        return cls.objects.filter(current_node__id = node_uuid, current_path = path, ghost = False).first() #TODO first?
 
     def __str__(self):
         return "%s (%s:%s)" % (self.full_path, str(self.id)[-5:], self.current_hash[-5:])
