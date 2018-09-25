@@ -99,7 +99,7 @@ class Resource(models.Model):
 
     @property
     def effects(self):
-        return self.commandonresource_set.all().order_by('-command__finished_at')
+        return self.commandonresource_set.all().order_by('-command__finished_at', '-command__group_order')
 
     @property
     def last_effect(self):
@@ -113,7 +113,7 @@ class Command(models.Model):
     return_code = models.SmallIntegerField(blank=True, null=True)
 
     # group_uuid
-    # group_order
+    group_order = models.PositiveSmallIntegerField(default=0)
 
     #NOTE Could eventually migrate User to an actual User model,
     #     additionally it could be abstracted to the eventual CommandGroup model
@@ -149,12 +149,12 @@ class CommandOnResource(models.Model):
     @property
     def prev(self):
         """Get the previous effect for the associated Resource"""
-        return self.resource.commandonresource_set.filter(command__finished_at__lt = self.command.finished_at).order_by('command__finished_at').last()
+        return self.resource.commandonresource_set.filter(command__finished_at__lte = self.command.finished_at).order_by('command__finished_at', '-command__group_order').last()
 
     @property
     def next(self):
         """Get the next effect for the associated Resource"""
-        return self.resource.commandonresource_set,filter(command__finished_at__gt = self.command.finished_at).order_by('command__finished_at').first()
+        return self.resource.commandonresource_set,filter(command__finished_at__gte = self.command.finished_at).order_by('command__finished_at', '-command__group_order').first()
 
 class MetaRecord(models.Model):
     """Metadata pertaining to:

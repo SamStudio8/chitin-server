@@ -43,11 +43,13 @@ def new_command(request):
     cmd_str = json_data["cmd_str"]
     user = json_data.get("user", "somebody")
     queued_at = datetime.fromtimestamp(json_data["queued_at"])
+    group_order = json_data.get("order", 0)
 
     c = models.Command(id=cmd_uuid)
     c.cmd_str = cmd_str
     c.user = user
     c.queued_at = queued_at
+    c.group_order = group_order
     c.save()
 
     return HttpResponse(json.dumps({
