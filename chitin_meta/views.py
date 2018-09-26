@@ -63,7 +63,34 @@ def new_command(request):
         "cmd_uuid": c.id,
     }), content_type="application/json")
 
-#def update_command(request, command_uuid):
+def tag_resource(request):
+    #TODO Check valid JSON etc...
+    json_data = json.loads(request.body)
+
+    res = None
+    if json_data.get("resource_uuid", None):
+        res = get_object_or_404(models.Resource, id=json_data["resource_uuid"])
+    else:
+        #TODO check node?
+        res = models.Resource.get_by_path(json_data["node_uuid"], json_data["path"])
+
+    if res:
+        for json_meta in json_data.get("metadata", []):
+            meta = models.MetaRecord()
+            meta.resource = res
+            meta.meta_tag = json_meta["tag"]
+            meta.meta_name = json_meta["name"]
+            meta.value_type = json_meta["type"]
+            meta.value = json_meta["value"]
+            meta.timestamp = datetime.fromtimestamp(json_data["timestamp"])
+            meta.save()
+
+    return HttpResponse(json.dumps({
+        "resource_uuid": str(res.id),
+        "updated": True,
+    }), content_type="application/json")
+
+
 def update_command(request):
 
     #TODO Check valid JSON etc...
