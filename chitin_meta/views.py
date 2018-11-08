@@ -121,6 +121,8 @@ def update_command(request):
     effect_code = 'X'
     updated_resources = []
     ignored_resources = []
+
+    dummy_c = None
     for resource in json_data.get("resources", {}):
         try:
             node = models.Node.objects.get(pk=resource["node_uuid"])
@@ -138,6 +140,19 @@ def update_command(request):
                 # New resource!
                 #TODO Override the RES save to auto-build COR (or vice versa)
                 effect_code = 'C'
+                if resource["precommand_exists"]:
+                    # Pre-existing resource has been NOTICED
+                    effect_code = 'N'
+
+                    if dummy_c is None:
+                        dummy_c = models.Command()
+                        dummy_c.cmd_str = 'NOTICED by chitin'
+                        dummy_c.user = 'chitin'
+                        dummy_c.queued_at = c.queued_at
+                        dummy_c.started_at = c.queued_at
+                        dummy_c.finished_at = c.queued_at
+                        dummy_c.group_order = 0
+                        dummy_c.save()
                 res = models.Resource()
             else:
                 if not resource["exists"]:
@@ -151,8 +166,13 @@ def update_command(request):
                     # Assume the file has just been used if the hash hasn't been updated
                     effect_code = 'U'
 
+
+            use_command = c
+            if effect_code == 'N':
+                use_command = dummy_c
+
             cor = models.CommandOnResource()
-            cor.command = c
+            cor.command = use_command
             cor.resource = res
             cor.resource_hash = resource["hash"]
             cor.resource_size = resource["size"]
