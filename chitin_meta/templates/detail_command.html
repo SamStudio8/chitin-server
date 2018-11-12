@@ -82,7 +82,18 @@
         <tbody>
         {% for metadatum in command.metadata %}
         <tr>
-            <td>{{ metadatum.resource }}</td>
+            <td>{% if metadatum.resource %}
+                <a href="{% url 'detail_resource' metadatum.resource.id %}">
+                    <span class="badge badge-success" style="margin: 0px 0 0px 0; font-size:1.1em;">
+                    <span style="font-size:0.8em;">&#128065;</span><br/>
+                    </span>
+                </a>
+                {% else %}
+                <span class="badge badge-success" style="margin: 0px 0 0px 0; font-size:1.1em; background-color: #000;">
+                <span style="font-size:0.8em;">&Oslash;</span><br/>
+                </span>
+                {% endif %}
+            </td>
             <td>{{ metadatum.meta_tag }}</td>
             <td>{{ metadatum.meta_name }}</td>
             <td>{{ metadatum.translate }}</td>
