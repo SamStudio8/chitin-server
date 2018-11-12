@@ -195,10 +195,25 @@ def update_command(request):
 
                 res.save()
 
+            # Resource metadata
+            n_tags = 0
+            for json_meta in resource["metadata"]:
+                meta = models.MetaRecord()
+                meta.command = use_command
+                meta.resource = res
+                meta.meta_tag = json_meta["tag"]
+                meta.meta_name = json_meta["name"]
+                meta.value_type = json_meta["type"]
+                meta.value = json_meta["value"]
+                meta.timestamp = finished_at
+                meta.save()
+                n_tags += 1
+
             updated_resources.append({
                 "res_uuid": str(res.id),
                 "res_path": res.current_path,
-                "effect_code": effect_code
+                "effect_code": effect_code,
+                "n_tags": n_tags,
             })
 
         except Exception as e:

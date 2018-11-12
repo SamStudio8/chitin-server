@@ -94,8 +94,20 @@ class Resource(models.Model):
 
     @property
     def metadata(self):
-        #TODO Future, flatten (tag, name) records if they have been 'overwritten'
-        return self.metarecord_set.all().order_by('-timestamp')
+        # Flatten (tag, name) records if they have been 'overwritten'
+        #TODO There must be a way to do this properly with the queryset
+        records = self.metarecord_set.all().order_by('-timestamp')
+        seen = {}
+        filtered = []
+        for r in records:
+            if r.meta_tag not in seen:
+                seen[r.meta_tag] = {}
+            if r.meta_name in seen[r.meta_tag]:
+                continue
+            seen[r.meta_tag][r.meta_name] = 1
+            filtered.append(r)
+        return filtered
+
 
     @property
     def effects(self):
