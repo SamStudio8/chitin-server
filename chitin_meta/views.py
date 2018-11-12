@@ -123,6 +123,7 @@ def update_command(request):
     ignored_resources = []
 
     dummy_c = None
+    use_command = c
     for resource in json_data.get("resources", {}):
         try:
             node = models.Node.objects.get(pk=resource["node_uuid"])
@@ -168,7 +169,6 @@ def update_command(request):
                     resource["hash"] = res.current_hash
 
 
-            use_command = c
             if effect_code == 'N':
                 use_command = dummy_c
 
@@ -224,6 +224,18 @@ def update_command(request):
 
 
     #meta...
+    n_tags = 0
+    for json_meta in json_data["metadata"]:
+        meta = models.MetaRecord()
+        meta.command = use_command
+        meta.resource = None
+        meta.meta_tag = json_meta["tag"]
+        meta.meta_name = json_meta["name"]
+        meta.value_type = json_meta["type"]
+        meta.value = json_meta["value"]
+        meta.timestamp = finished_at
+        meta.save()
+        n_tags += 1
 
     return HttpResponse(json.dumps({
         "cmd_uuid": str(c.id),
@@ -231,5 +243,6 @@ def update_command(request):
         "ignored_resources": ignored_resources,
         "updated": True,
         "warnings": n_warnings,
+        "n_tags": n_tags,
     }), content_type="application/json")
 
