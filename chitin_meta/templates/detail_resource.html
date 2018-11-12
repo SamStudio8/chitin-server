@@ -184,7 +184,13 @@
         {% if resource.metadata %}
         {% for metadatum in resource.metadata %}
         <tr>
-            <td>{{ metadatum.command }}</td>
+            <td>
+            <a href="{% url 'detail_command' metadatum.command.id %}">
+                <span class="badge badge-danger" style="margin: 0px 0 0px 0; font-size:1.1em;">
+                <span style="font-size:0.8em;">&#128065;</span><br/>
+                </span>
+            </a>
+            </td>
             <td>{{ metadatum.meta_tag }}</td>
             <td>{{ metadatum.meta_name }}</td>
             <td>{{ metadatum.translate }}</td>

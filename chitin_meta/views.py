@@ -165,6 +165,7 @@ def update_command(request):
                     # Used
                     # Assume the file has just been used if the hash hasn't been updated
                     effect_code = 'U'
+                    resource["hash"] = res.current_hash
 
 
             use_command = c
