@@ -144,7 +144,7 @@ def update_command(request):
                     # Pre-existing resource has been NOTICED
                     effect_code = 'N'
 
-                    if dummy_c is None:
+                    if dummy_c is None and "chitin-notice" not in c.cmd_str:
                         dummy_c = models.Command()
                         dummy_c.cmd_str = 'NOTICED by chitin'
                         dummy_c.user = 'chitin'
