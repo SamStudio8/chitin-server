@@ -158,6 +158,9 @@ class CommandOnResource(models.Model):
 
     effect_status = models.CharField(max_length=1)
 
+    def __str__(self):
+        return ("%s - %s" % (self.command, self.resource))
+
     @property
     def prev(self):
         """Get the previous effect for the associated Resource"""

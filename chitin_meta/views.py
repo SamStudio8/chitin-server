@@ -169,7 +169,7 @@ def update_command(request):
                     resource["hash"] = res.current_hash
 
 
-            if effect_code == 'N':
+            if effect_code == 'N' and dummy_c:
                 use_command = dummy_c
 
             cor = models.CommandOnResource()
