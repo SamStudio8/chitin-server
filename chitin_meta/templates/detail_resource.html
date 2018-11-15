@@ -184,12 +184,17 @@
         {% if resource.metadata %}
         {% for metadatum in resource.metadata %}
         <tr>
-            <td>
-            <a href="{% url 'detail_command' metadatum.command.id %}">
-                <span class="badge badge-danger" style="margin: 0px 0 0px 0; font-size:1.1em;">
-                <span style="font-size:0.8em;">&#128065;</span><br/>
+            <td>{% if metadatum.command %}
+                <a href="{% url 'detail_command' metadatum.command.id %}">
+                    <span class="badge badge-danger" style="margin: 0px 0 0px 0; font-size:1.1em;">
+                    <span style="font-size:0.8em;">&#128065;</span><br/>
+                    </span>
+                </a>
+                {% else %}
+                <span class="badge badge-success" style="margin: 0px 0 0px 0; font-size:1.1em; background-color: #000;">
+                <span style="font-size:0.8em;">&Oslash;</span><br/>
                 </span>
-            </a>
+                {% endif %}
             </td>
             <td>{{ metadatum.meta_tag }}</td>
             <td>{{ metadatum.meta_name }}</td>

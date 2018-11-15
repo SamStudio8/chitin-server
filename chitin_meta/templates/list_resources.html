@@ -5,8 +5,13 @@
     <h1>Resources</h1>
     <h3>in {{ group.current_node.name }}:{{ group.current_path }}</h3>
 
-<table class="table">
-    <thead>
+<table class="table table-hover table-active">
+    <thead class="thead-inverse">
+        <tr>
+            <th>Basename</th>
+            <th>Size</th>
+            <th>Last Seen</th>
+        </tr>
     </thead>
     <tbody>
     {% for resource in resources %}
