@@ -26,7 +26,7 @@ def list_node_groups(request, node_uuid):
 def list_group_resources(request, group_uuid):
     group = get_object_or_404(models.ResourceGroup, id=group_uuid)
     return render(request, 'list_resources.html', {
-        "resources": models.Resource.objects.filter(current_master_group = group, ghost = False),
+        "resources": models.Resource.objects.filter(current_master_group = group, ghost = False).order_by('current_path'),
         "group": group,
     })
 
