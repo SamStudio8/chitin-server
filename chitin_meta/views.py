@@ -198,7 +198,7 @@ def update_command(request):
 
             # Resource metadata
             n_tags = 0
-            for json_meta in resource["metadata"]:
+            for json_meta in resource.get("metadata", []):
                 meta = models.MetaRecord()
                 meta.command = use_command
                 meta.resource = res
@@ -225,7 +225,7 @@ def update_command(request):
 
     #meta...
     n_tags = 0
-    for json_meta in json_data["metadata"]:
+    for json_meta in json_data.get("metadata", []):
         meta = models.MetaRecord()
         meta.command = use_command
         meta.resource = None
