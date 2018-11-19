@@ -103,6 +103,7 @@ def group_resources(request):
         group.name = group_json.get("name", "Unnamed group")
         group.physical = False
 
+        group.save()
         for parent_group in group_json.get("parents", []):
             p_group = get_object_or_404(models.ResourceGroup, id=parent_group)
             group.tagged_groups.add(p_group)
