@@ -26,7 +26,10 @@ class ResourceGroup(models.Model):
     physical = models.BooleanField()
     current_node = models.ForeignKey('Node', blank=True, null=True)
     current_path = models.CharField(max_length=512, blank=True, null=True)
-    parent_group = models.ForeignKey('ResourceGroup', blank=True, null=True)
+    parent_group = models.ForeignKey('ResourceGroup', blank=True, null=True) # not currently using these
+
+    def __str__(self):
+        return self.name
 
     @classmethod
     def get_by_path(cls, node_uuid, path):
