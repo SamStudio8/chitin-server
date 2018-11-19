@@ -21,9 +21,12 @@ class ResourceGroup(models.Model):
     # but it could also be a pseudo-folder like group of files that make up a database, or an experiment.
     # A Resource must have a ResourceGroup, but can be attached to other groups as 'tags'.
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=512)
 
+    physical = models.BooleanField()
     current_node = models.ForeignKey('Node', blank=True, null=True)
     current_path = models.CharField(max_length=512, blank=True, null=True)
+    parent_group = models.ForeignKey('ResourceGroup', blank=True, null=True)
 
     @classmethod
     def get_by_path(cls, node_uuid, path):
@@ -41,6 +44,7 @@ class Resource(models.Model):
     ghost = models.BooleanField(default=False)
 
     current_master_group = models.ForeignKey('ResourceGroup') # represents the physical directory
+    groups = models.ManyToManyField('ResourceGroup', related_name="tagged_resources") # represents 'tagged' ResourceGroups
 
     @classmethod
     def get_by_path(cls, node_uuid, path):
