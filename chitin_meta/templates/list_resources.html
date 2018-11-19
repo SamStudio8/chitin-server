@@ -2,8 +2,13 @@
 {% load humanize %}
 
 <div class="container">
-    <h1>Resources</h1>
-    <h3>in {{ group.current_node.name }}:{{ group.current_path }}</h3>
+    {% if group.physical %}
+        <h1>Physical Resources</h1>
+        <h3>in {{ group.current_node.name }}:{{ group.current_path }}</h3>
+    {% else %}
+        <h1>Tagged Resources</h1>
+        <h3>in {{ group.name }}</h3>
+    {% endif %}
 
 <table class="table table-hover table-active">
     <thead class="thead-inverse">

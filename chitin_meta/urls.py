@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'api/command/new/$', csrf_exempt(views.new_command), name='new_command'),
 
     url(r'api/resource/meta/$', csrf_exempt(views.tag_resource), name='tag_resource'),
+    url(r'api/resource/group/$', csrf_exempt(views.group_resources), name='group_resources'),
 
 
     # Home

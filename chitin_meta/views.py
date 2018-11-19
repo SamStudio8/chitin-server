@@ -91,6 +91,41 @@ def tag_resource(request):
     }), content_type="application/json")
 
 
+def group_resources(request):
+    #TODO Check valid JSON etc...
+    group_json = json.loads(request.body)
+
+    if group_json.get("group_uuid"):
+        group = get_object_or_404(models.ResourceGroup, id=group_json["group_uuid"])
+    else:
+        # just make a new group whatever
+        group = models.ResourceGroup()
+        group.name = group_json.get("name", "Unnamed group")
+        group.physical = False
+        group.save()
+
+    updated_resources = []
+    for res_json in group_json.get("resources", []):
+        res = None
+        if res_json.get("resource_uuid", None):
+            res = get_object_or_404(models.Resource, id=res_json["resource_uuid"])
+        else:
+            #TODO check node?
+            res = models.Resource.get_by_path(res_json["node_uuid"], res_json["path"])
+
+        if res:
+            res.groups.add(group)
+            res.save()
+            updated_resources.append(res.current_path)
+
+    #TODO better error reporting
+    return HttpResponse(json.dumps({
+        "group_uuid": str(group.id),
+        "updated_resources": updated_resources,
+        "updated": True,
+    }), content_type="application/json")
+
+
 def update_command(request):
 
     #TODO Check valid JSON etc...
