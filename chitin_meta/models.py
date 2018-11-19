@@ -26,7 +26,9 @@ class ResourceGroup(models.Model):
     physical = models.BooleanField()
     current_node = models.ForeignKey('Node', blank=True, null=True)
     current_path = models.CharField(max_length=512, blank=True, null=True)
-    parent_group = models.ForeignKey('ResourceGroup', blank=True, null=True) # not currently using these
+    physical_parent_group = models.ForeignKey('ResourceGroup', blank=True, null=True) # not currently using these
+
+    groups = models.ManyToManyField('ResourceGroup', related_name="tagged_groups") # represents 'tagged' ResourceGroups
 
     def __str__(self):
         return self.name
