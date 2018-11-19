@@ -9,6 +9,7 @@ def set_default_resourcegroup_name(apps, schema_editor):
     ResourceGroup = apps.get_model('chitin_meta', 'ResourceGroup')
     for rg in ResourceGroup.objects.all():
         rg.name = str(rg.current_path)
+        rg.physical = True
         rg.save()
 
 class Migration(migrations.Migration):
