@@ -5,6 +5,11 @@
         <div class="row">
         <div class="col-md-6">
             <span class="badge badge-info">Resource Group</span>
+            {% if group.physical %}
+                <span class="badge badge-info">Physical</span>
+            {% else %}
+                <span class="badge badge-info">Virtual</span>
+            {% endif %}
             <span class="uuid-mast" style="margin-top:0; padding-top:0;">{{ group.id }}</span>
         </div>
         <div class="col-md-6 text-right">
@@ -30,26 +35,22 @@
     <thead class="thead-inverse">
         <tr>
             <th>Name</th>
+            <th class="text-right">Resources</th>
         </tr>
     </thead>
     <tbody>
     {% for sub_group in group.tagged_groups.all %}
     <tr>
-        <td><a href="{% url 'list_resources' sub_group.id %}">{{ sub_group.id }}</a></br>
-            {% if sub_group.physical %}
-            <b>{{ sub_group.current_path }}</b>
-            {% else %}
-            <b>{{ sub_group.name }}</b>
-            {% endif %}
-        </td>
+        <td><a href="{% url 'list_resources' sub_group.id %}"><b>{{ sub_group.name }}</b></a></td>
+        <td class="text-right">{{ sub_group.tagged_resources.count }}</td>
     </tr>
     {% endfor %}
     </tbody>
 </table>
 
 <hr/>
-
-<h2>Resources</h2>
+{% if group.physical %}
+<h2>Physical Resources</h2>
 <table class="table table-hover table-active">
     <thead class="thead-inverse">
         <tr>
@@ -68,6 +69,27 @@
     {% endfor %}
     </tbody>
 </table>
+{% else %}
+<h2>Tagged Resources</h2>
+<table class="table table-hover table-active">
+    <thead class="thead-inverse">
+        <tr>
+            <th>Basename</th>
+            <th>Size</th>
+            <th>Last Seen</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for resource in group.tagged_resources.all %}
+    <tr>
+        <td><a href="{% url 'detail_resource' resource.id %}"><b>{{ resource.basename }}</b></a></td>
+        <td>{{ resource.current_size | filesizeformat }}</td>
+        <td>{{ resource.last_effect.command.finished_at | naturaltime }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endif %}
 
 </div>
 
