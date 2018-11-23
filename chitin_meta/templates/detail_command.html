@@ -118,8 +118,8 @@
         </tr>
     </thead>
     <tbody>
-    {% if command.effects %}
-    {% for effect in command.effects.all %}
+    {% if command.effects_changed %}
+    {% for effect in command.effects_changed %}
     <tr>
         <td class="text-center"><b>{{ effect.effect_status }}</b></td>
         <td>
@@ -143,6 +143,35 @@
     {% endif %}
     </tbody>
 </table>
+
+
+<h3>Unchanged Resources</h3>
+<table class="table table-hover table-active">
+    <thead class="thead-dark">
+        <tr>
+            <th width="5%"></th>
+            <th>Path</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% if command.effects_unchanged %}
+    {% for effect in command.effects_unchanged %}
+    <tr>
+        <td class="text-center"><b>{{ effect.effect_status }}</b></td>
+        <td>
+            <span class="uuid-mast" style="margin-top:0; padding-top:0; display:block;"><a href="{% url 'detail_resource' effect.resource.id %}">{{ effect.resource.full_path }}</a></span>
+            <b>{{ effect.resource.basename }}</b>
+        </td>
+    </tr>
+    {% endfor %}
+    {% else %}
+    <tr>
+        <td colspan=4>There were no unchanged resources.</td>
+    </tr>
+    {% endif %}
+    </tbody>
+</table>
+
 
 </div>
 

@@ -5,6 +5,7 @@ import uuid
 import os
 
 from django.db import models
+from django.db.models import Q
 
 
 class Node(models.Model):
@@ -152,6 +153,14 @@ class Command(models.Model):
     def metadata(self):
         #TODO Future, flatten (tag, name) records if they have been 'overwritten'
         return self.metarecord_set.all().order_by('-timestamp')
+
+    @property
+    def effects_unchanged(self):
+        return self.effects.filter(Q(effect_status = 'U'))
+
+    @property
+    def effects_changed(self):
+        return self.effects.filter(~Q(effect_status = 'U'))
 
 
 class CommandOnResource(models.Model):
