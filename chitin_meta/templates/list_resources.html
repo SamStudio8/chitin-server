@@ -31,8 +31,9 @@
 
 
 <h2>Resource Groups</h2>
+<div class="table-responsive">
 <table class="table table-hover table-active">
-    <thead class="thead-inverse">
+    <thead class="thead-dark">
         <tr>
             <th>Name</th>
             <th class="text-right">Resources</th>
@@ -47,12 +48,14 @@
     {% endfor %}
     </tbody>
 </table>
+</div>
 
 <hr/>
 {% if group.physical %}
 <h2>Physical Resources</h2>
+<div class="table-responsive">
 <table class="table table-hover table-active">
-    <thead class="thead-inverse">
+    <thead class="thead-dark">
         <tr>
             <th>Basename</th>
             <th>Size</th>
@@ -69,10 +72,12 @@
     {% endfor %}
     </tbody>
 </table>
+</div>
 {% else %}
 <h2>Tagged Resources</h2>
+<div class="table-responsive">
 <table class="table table-hover table-active">
-    <thead class="thead-inverse">
+    <thead class="thead-dark">
         <tr>
             <th>Basename</th>
             <th>Size</th>
@@ -89,6 +94,7 @@
     {% endfor %}
     </tbody>
 </table>
+</div>
 {% endif %}
 
 </div>
