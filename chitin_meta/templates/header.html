@@ -74,9 +74,9 @@
             <ul class="nav navbar-nav ml-auto">
             </ul>
 
-            <form class="form-inline navbar-right">
+            <form class="form-inline navbar-right" action="{% url 'search' %}">
             <div class="input-group">
-              <input class="form-control" type="text" placeholder="Search">
+              <input class="form-control" name="q" type="text" placeholder="Search UUID">
               <div class="input-group-append">
                 <button class="btn btn-success" type="submit">&#128269;</button>
               </div>

@@ -2,12 +2,13 @@
 from __future__ import unicode_literals
 
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 
 import os
 import json
 from datetime import datetime
+import uuid
 
 from . import models
 
@@ -15,6 +16,21 @@ def home(request):
     return render(request, 'list_nodes.html', {
         "nodes": models.Node.objects.all()
     })
+
+def search(request):
+    query = None
+    try:
+        query = request.GET.get("q", None)
+        if query:
+            if models.Resource.objects.filter(id=query).first():
+                return detail_resource(request, query)
+            elif models.ResourceGroup.objects.filter(id=query).first():
+                return list_group_resources(request, query)
+            elif models.Command.objects.filter(id=query).first():
+                return detail_command(request, query)
+    except Exception:
+        return HttpResponseBadRequest("Invalid UUID.")
+    raise Http404("UUID cannot be found...")
 
 def list_node_groups(request, node_uuid):
     node = get_object_or_404(models.Node, id=node_uuid)

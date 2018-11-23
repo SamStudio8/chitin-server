@@ -18,5 +18,6 @@ urlpatterns = [
 
 
     # Home
+    url(r'search/$', views.search, name='search'),
     url(r'$', views.home, name='home'),
 ]
