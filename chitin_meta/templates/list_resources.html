@@ -29,9 +29,12 @@
 
 <div class="container">
 
+<div class="row">
+<div class="col-md-8">
 
 {% if group.tagged_groups.all %}
 <h2>Resource Groups</h2>
+<p>Other Groups associated to this Group</p>
 <div class="table-responsive">
 <table class="table table-hover table-active">
     <thead class="thead-dark">
@@ -55,6 +58,7 @@
 
 {% if group.physical %}
 <h2>Physical Resources</h2>
+<p>Resources that physically reside in this Group's path</p>
 <div class="table-responsive">
 <table class="table table-hover table-active">
     <thead class="thead-dark">
@@ -77,6 +81,7 @@
 </div>
 {% else %}
 <h2>Tagged Resources</h2>
+<p>Resources tagged as a member of this Group</p>
 <div class="table-responsive">
 <table class="table table-hover table-active">
     <thead class="thead-dark">
@@ -99,6 +104,36 @@
 </div>
 {% endif %}
 
+</div>
+<div class="col-md-4">
+    <h3>Metadata</h3>
+    <p>Extra information tagged to this Group</p>
+    <table class="table table-hover table-active">
+        <thead class="thead-dark">
+            <tr>
+                <th>Tag</th>
+                <th>Name</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if group.metadata %}
+        {% for metadatum in group.metadata %}
+        <tr>
+            <td>{{ metadatum.meta_tag }}</td>
+            <td>{{ metadatum.meta_name }}</td>
+            <td>{{ metadatum.translate }}</td>
+        </tr>
+        {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="3">Not much to say.</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+</div>
 </div>
 
 {% include 'footer.html' %}

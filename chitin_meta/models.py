@@ -38,6 +38,11 @@ class ResourceGroup(models.Model):
     def get_by_path(cls, node_uuid, path):
         return cls.objects.filter(current_node__id = node_uuid, current_path = path).first() #TODO first?
 
+    @property
+    def metadata(self):
+        #TODO Future, flatten (tag, name) records if they have been 'overwritten'
+        return self.metarecord_set.all().order_by('-timestamp')
+
 
 class Resource(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
