@@ -35,6 +35,8 @@
 
 <div class="row">
 <div class="col-md-6">
+
+{% if command.finished_at %}
 <h3>Basic Info</h3>
 
 <table class="table table-active">
@@ -171,6 +173,10 @@
     {% endif %}
     </tbody>
 </table>
+{% else %}
+<h3>Patience!</h3>
+<p>Command was queued at {{ command.queued_at }} but it appears not to have finished yet. Check back later!</p>
+{% endif %}
 
 
 </div>

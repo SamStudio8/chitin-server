@@ -188,6 +188,7 @@ def update_command(request):
             if not dir_group:
                 # New directory!
                 dir_group = models.ResourceGroup()
+                dir_group.physical = True
                 dir_group.current_node = node
                 dir_group.current_path = os.path.dirname(resource["path"])
                 dir_group.save()
