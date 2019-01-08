@@ -71,7 +71,7 @@
             </a>
         </td>
         <td>
-            <pre>{{ effect.command.cmd_str | escape }}</pre>
+            <pre style="white-space: pre-wrap; width: auto; font-size:0.75em; margin:0"><code>{{ effect.command.cmd_str | escape }}</code></pre>
         </td>
         <td>
             <span class="badge badge-primary">
@@ -85,7 +85,10 @@
                 <span class="badge badge-danger">{{ effect.command.return_code }}</span>
             {% endif %}
         </td>
-        <td class="text-right">{{ effect.command.finished_at }}<br/>{{ effect.command.finished_at | naturaltime }}</td>
+        <td class="text-right" style="white-space:nowrap;">
+            {{ effect.command.finished_at | naturaltime }}<br/>
+            <span style="font-size:0.75em;">{{ effect.command.finished_at }}</span>
+        </td>
     </tr>
     {% endfor %}
     {% else %}
