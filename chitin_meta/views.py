@@ -84,16 +84,28 @@ def tag_resource(request):
     json_data = json.loads(request.body)
 
     res = None
+    group = None
     if json_data.get("resource_uuid", None):
         res = get_object_or_404(models.Resource, id=json_data["resource_uuid"])
+    elif json_data.get("group_uuid", None):
+        group = models.ResourceGroup.objects.get(pk=json_data["group_uuid"])
     else:
         #TODO check node?
         res = models.Resource.get_by_path(json_data["node_uuid"], json_data["path"])
 
-    if res:
+    r_uuid = ""
+    g_uuid = ""
+    if res or group:
         for json_meta in json_data.get("metadata", []):
             meta = models.MetaRecord()
-            meta.resource = res
+
+            if res:
+                meta.resource = res
+                r_uuid = str(res.id)
+            if group:
+                meta.group = group
+                g_uuid = str(group.id)
+
             meta.meta_tag = json_meta["tag"]
             meta.meta_name = json_meta["name"]
             meta.value_type = json_meta["type"]
@@ -102,7 +114,8 @@ def tag_resource(request):
             meta.save()
 
     return HttpResponse(json.dumps({
-        "resource_uuid": str(res.id),
+        "resource_uuid": r_uuid,
+        "group_uuid": g_uuid,
         "updated": True,
     }), content_type="application/json")
 
