@@ -106,6 +106,31 @@
 
 </div>
 <div class="col-md-4">
+    <h3>Parents</h3>
+    <p>Groups above this Group</p>
+    <table class="table table-hover table-active">
+        <thead class="thead-dark">
+            <tr>
+                <th>Group</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% if group.groups.all.count %}
+        {% for parent in group.groups.all %}
+        <tr>
+            <td>
+                <a href="{% url 'list_resources' parent.id %}"><span class="badge" style="background-color:#000">{{ parent.display_name }}</span></a>
+            </td>
+        </tr>
+        {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="1">Orphaned.</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
     <h3>Metadata</h3>
     <p>Extra information tagged to this Group</p>
     <table class="table table-hover table-active">

@@ -34,6 +34,13 @@ class ResourceGroup(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def display_name(self):
+        if self.name:
+            return self.name
+        else:
+            return self.current_path
+
     @classmethod
     def get_by_path(cls, node_uuid, path):
         return cls.objects.filter(current_node__id = node_uuid, current_path = path).first() #TODO first?
