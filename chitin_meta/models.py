@@ -194,10 +194,12 @@ class MetaRecord(models.Model):
         * A Command, such as run time, or its parameters,
         * A Resource, such as the number of lines or records inside of it,
         * A Command and Resource, indicating a record for a Command that has changed a Resource
+        * A ResourceGroup, to save you having to mark all the Resources inside
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     resource = models.ForeignKey('Resource', null=True, blank=True)
+    group = models.ForeignKey('ResourceGroup', null=True, blank=True)
     command = models.ForeignKey('Command', null=True, blank=True)
 
     meta_tag = models.CharField(max_length=64, db_index=True)
