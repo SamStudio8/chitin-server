@@ -32,10 +32,11 @@ def search(request):
         return HttpResponseBadRequest("Invalid UUID.")
     raise Http404("UUID cannot be found...")
 
-def list_node_groups(request, node_uuid):
+def detail_node(request, node_uuid):
     node = get_object_or_404(models.Node, id=node_uuid)
-    return render(request, 'list_groups.html', {
+    return render(request, 'detail_node.html', {
         "groups": models.ResourceGroup.objects.filter(current_node = node),
+        "recent_commands": models.Command.objects.all().order_by("-finished_at")[:5],
         "node": node,
     })
 

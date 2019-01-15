@@ -29,7 +29,7 @@
 <div class="mast2">
     <div class="container">
           {% if group.physical %}
-            <a href="{% url 'list_groups' group.current_node.id %}"><span class="badge" style="background-color:#000">{{ group.current_node.name }}</span></a> ►
+            <a href="{% url 'detail_node' group.current_node.id %}"><span class="badge" style="background-color:#000">{{ group.current_node.name }}</span></a> ►
             <a href="{% url 'list_resources' group.id %}"><span class="badge" style="background-color:#000">{{ group.display_name }}</span></a>
           {% endif %}
     </div>

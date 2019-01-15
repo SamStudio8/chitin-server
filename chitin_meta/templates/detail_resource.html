@@ -28,7 +28,7 @@
         {% if resource.ghost %}
             <span class="badge badge-danger">Deleted</span>
         {% endif %}
-            <a href="{% url 'list_groups' resource.current_node.id %}"><span class="badge" style="background-color:#000">{{ resource.current_node.name }}</span></a> ►
+            <a href="{% url 'detail_node' resource.current_node.id %}"><span class="badge" style="background-color:#000">{{ resource.current_node.name }}</span></a> ►
             <a href="{% url 'list_resources' resource.current_master_group.id %}"><span class="badge" style="background-color:#000">{{ resource.dirname }}</span></a> ►
             <span class="badge badge-success">{{ resource.basename }}</span>
     </div>
