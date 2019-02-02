@@ -51,6 +51,7 @@
     <tbody>
     {% if resource.effects %}
     {% for effect in resource.effects.all %}
+    {% if effect.effect_status != 'U' %}
     <!--<tr>
         <td colspan=5 style="padding:0;">
             <a href="{% url 'detail_command' effect.command.id %}">
@@ -90,6 +91,7 @@
             <span style="font-size:0.75em;">{{ effect.command.finished_at }}</span>
         </td>
     </tr>
+    {% endif %}
     {% endfor %}
     {% else %}
     <tr>
