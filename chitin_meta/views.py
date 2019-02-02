@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Q
 
 import os
 import json
@@ -317,3 +318,60 @@ def update_command(request):
         "n_tags": n_tags,
     }), content_type="application/json")
 
+
+def tabulate(request):
+    q = request.GET.get('q', None)
+
+    fields = []
+
+    if q:
+        queries = q.split(",")
+        for f in queries:
+            parts = f.split(".")
+            
+            tag = None
+            name = None
+            try:
+                tag = parts[0]
+            except:
+                return HttpResponseBadRequest("Invalid query.")
+            try:
+                name = parts[1]
+            except:
+                #TODO In future we could just show all the tag:names if name is blank
+                return HttpResponseBadRequest("Invalid query.")
+
+            fields.append( (tag, name) )
+
+        import operator
+        query = reduce(
+                operator.or_, 
+                (Q(meta_tag=m_tag, meta_name=m_name) for m_tag, m_name in fields)
+        )
+        r = models.MetaRecord.objects.filter(query)
+
+
+        #TODO this is fucking horrible but i wrote it on belgian beer so what are you gonna do
+        # im sorry i do feel quite bad about this
+        d = {}
+        resources = set([str(x["resource_id"]) for x in r.values("resource_id")])
+
+
+        for res in resources:
+            d[res] = []
+            for f in fields:
+                try:
+                    v = models.MetaRecord.objects.filter(resource_id=res, meta_tag=f[0], meta_name=f[1]).latest("timestamp").value
+                except:
+                    v = '-'
+                d[res].append( v )
+
+        return render(request, 'tabulate.html', {
+            "q": q,
+            "results": r,
+            "fields": fields,
+            "d": d,
+            "resources": resources,
+        })
+    else:
+        return HttpResponseBadRequest("Invalid query.")

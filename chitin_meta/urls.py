@@ -9,6 +9,8 @@ urlpatterns = [
     url(r'resource/(?P<resource_uuid>[0-9a-f-]+)/$', views.detail_resource, name='detail_resource'),
     url(r'command/(?P<command_uuid>[0-9a-f-]+)/$', views.detail_command, name='detail_command'),
 
+    url(r'meta/$', views.tabulate, name='tabulate'),
+
     # API
     url(r'api/command/update/$', csrf_exempt(views.update_command), name='update_command'),
     url(r'api/command/new/$', csrf_exempt(views.new_command), name='new_command'),
