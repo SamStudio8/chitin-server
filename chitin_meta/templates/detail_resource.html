@@ -36,7 +36,6 @@
 
 <div class="container">
 
-<h3>History</h3>
 <div class="table-responsive">
 <table class="table table-hover table-active">
     <thead class="thead-dark">
@@ -44,63 +43,71 @@
             <th></th>
             <th>Command</th>
             <th>User</th>
-            <th>Exit</th>
             <th class="text-right">Timestamp</th>
         </tr>
     </thead>
     <tbody>
-    {% if resource.effects %}
-    {% for effect in resource.effects.all %}
-    {% if effect.effect_status != 'U' %}
-    <!--<tr>
-        <td colspan=5 style="padding:0;">
-            <a href="{% url 'detail_command' effect.command.id %}">
-                <span class="badge badge-danger" style="margin: 0;">
-                        <span style="font-size:1.1em;">&#128065;</span>
-                        <span class="little-text"> {{ effect.command.id }}</span>
-                </span>
-            </a>
-        </td>
-    </tr>-->
+    {% if resource.effect_last_modified %}
     <tr>
         <td class="text-center" width=2em>
-            <a href="{% url 'detail_command' effect.command.id %}">
-                <span class="badge badge-danger" style="margin: 0px 0 0px 0; font-size:1.1em;">
-                <span style="font-size:0.8em;">&#128065;</span><br/>
-                <b>{{ effect.effect_status }}</b>
-                </span>
-            </a>
+            Last Modified
         </td>
         <td>
-            <pre style="white-space: pre-wrap; width: auto; font-size:0.75em; margin:0"><code>{{ effect.command.cmd_str | escape }}</code></pre>
+            <a href="{% url 'detail_command' resource.effect_last_modified.command.id %}"><pre style="white-space: pre-wrap; width: auto; font-size:0.75em; margin:0"><code>{{ resource.effect_last_modified.command.cmd_str | escape }}</code></pre></a>
         </td>
         <td>
             <span class="badge badge-primary">
-            <b>{{ effect.command.user }}</b>
+            <b>{{ resource.effect_last_modified.command.user }}</b>
             </span>
         </td>
-        <td>
-            {% if effect.command.return_code == 0 %}
-                <span class="badge badge-success">{{ effect.command.return_code }}</span>
-            {% else %}
-                <span class="badge badge-danger">{{ effect.command.return_code }}</span>
-            {% endif %}
-        </td>
         <td class="text-right" style="white-space:nowrap;">
-            {{ effect.command.finished_at | naturaltime }}<br/>
-            <span style="font-size:0.75em;">{{ effect.command.finished_at }}</span>
+            {{ resource.effect_last_modified.command.finished_at | naturaltime }}<br/>
+            <span style="font-size:0.75em;">{{ resource.effect_last_modified.command.finished_at }}</span>
         </td>
     </tr>
     {% endif %}
-    {% endfor %}
-    {% else %}
+    {% if resource.effect_last_used %}
     <tr>
-        <td>No history.</td>
+        <td class="text-center" width=2em>
+            Last Used
+        </td>
+        <td>
+            <a href="{% url 'detail_command' resource.effect_last_used.command.id %}"><pre style="white-space: pre-wrap; width: auto; font-size:0.75em; margin:0"><code>{{ resource.effect_last_used.command.cmd_str | escape }}</code></pre></a>
+        </td>
+        <td>
+            <span class="badge badge-primary">
+            <b>{{ resource.effect_last_used.command.user }}</b>
+            </span>
+        </td>
+        <td class="text-right" style="white-space:nowrap;">
+            {{ resource.effect_last_used.command.finished_at | naturaltime }}<br/>
+            <span style="font-size:0.75em;">{{ resource.effect_last_used.command.finished_at }}</span>
+        </td>
+    </tr>
+    {% endif %}
+    {% if resource.effect_created %}
+    <tr>
+        <td class="text-center" width=2em>
+            Created
+        </td>
+        <td>
+            <a href="{% url 'detail_command' resource.effect_created.command.id %}"><pre style="white-space: pre-wrap; width: auto; font-size:0.75em; margin:0"><code>{{ resource.effect_created.command.cmd_str | escape }}</code></pre></a>
+        </td>
+        <td>
+            <span class="badge badge-primary">
+            <b>{{ resource.effect_created.command.user }}</b>
+            </span>
+        </td>
+        <td class="text-right" style="white-space:nowrap;">
+            {{ resource.effect_created.command.finished_at | naturaltime }}<br/>
+            <span style="font-size:0.75em;">{{ resource.effect_created.command.finished_at }}</span>
+        </td>
     </tr>
     {% endif %}
     </tbody>
 </table>
 </div>
+
 
 <hr>
 
@@ -220,7 +227,7 @@
     <hr/>
 
     <h3>Groups</h3>
-    <p>Groups tagged with this Resource</p>
+    <p>Groups associated with this Resource</p>
     <table class="table table-hover table-active">
         <thead class="thead-dark">
             <tr>

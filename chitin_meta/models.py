@@ -84,7 +84,6 @@ class Resource(models.Model):
     def dirname(self):
         return os.path.dirname(self.current_path)
 
-
     @property
     def hash_friends(self):
         """Return other Resources who share the current_hash, that are not the current Resource, or ghosted."""
@@ -138,6 +137,18 @@ class Resource(models.Model):
     @property
     def last_effect(self):
         return self.effects.last()
+
+    @property
+    def effect_created(self):
+        return self.commandonresource_set.filter(effect_status__in = ['N','C']).earliest('command__finished_at')
+
+    @property
+    def effect_last_modified(self):
+        return self.commandonresource_set.filter(Q(effect_status = 'M')).latest('command__finished_at')
+    @property
+    def effect_last_used(self):
+        return self.commandonresource_set.filter(Q(effect_status = 'U')).latest('command__finished_at')
+
 
 class Command(models.Model):
 
