@@ -81,7 +81,8 @@ def new_command(request):
         "cmd_uuid": c.id,
     }), content_type="application/json")
 
-def tag_resource(request):
+
+def tag_meta(request):
     #TODO Check valid JSON etc...
     json_data = json.loads(request.body)
 
@@ -321,57 +322,70 @@ def update_command(request):
 
 def tabulate(request):
     q = request.GET.get('q', None)
+    if not q:
+        return HttpResponseBadRequest("Invalid query.")
+
+    #if q_type not in ["command", "resource", "group"]:
+    #    return HttpResponseBadRequest("Invalid query.")
 
     fields = []
 
-    if q:
-        queries = q.split(",")
-        for f in queries:
-            parts = f.split(".")
-            
-            tag = None
-            name = None
-            try:
-                tag = parts[0]
-            except:
-                return HttpResponseBadRequest("Invalid query.")
-            try:
-                name = parts[1]
-            except:
-                #TODO In future we could just show all the tag:names if name is blank
-                return HttpResponseBadRequest("Invalid query.")
+    queries = q.split(",")
+    for f in queries:
+        parts = f.split(".")
+        
+        tag = None
+        name = None
+        try:
+            tag = parts[0]
+        except:
+            return HttpResponseBadRequest("Invalid query.")
+        try:
+            name = parts[1]
+        except:
+            #TODO In future we could just show all the tag:names if name is blank
+            return HttpResponseBadRequest("Invalid query.")
 
-            fields.append( (tag, name) )
+        fields.append( (tag, name) )
 
-        import operator
-        query = reduce(
-                operator.or_, 
-                (Q(meta_tag=m_tag, meta_name=m_name) for m_tag, m_name in fields)
-        )
-        r = models.MetaRecord.objects.filter(query)
-
-
-        #TODO this is fucking horrible but i wrote it on belgian beer so what are you gonna do
-        # im sorry i do feel quite bad about this
-        d = {}
-        resources = set([str(x["resource_id"]) for x in r.values("resource_id")])
+    import operator
+    query = reduce(
+            operator.or_, 
+            (Q(meta_tag=m_tag, meta_name=m_name) for m_tag, m_name in fields)
+    )
+    r = models.MetaRecord.objects.filter(query)
 
 
-        for res in resources:
-            d[res] = []
+    #TODO this is fucking horrible but i wrote it on belgian beer so what are you gonna do
+    # im sorry i do feel quite bad about this
+    ids = {
+            "resource": set([str(x["resource_id"]) for x in r.values("resource_id")]),
+            "command": set([str(x["command_id"]) for x in r.values("command_id")]),
+            "group": set([str(x["group_id"]) for x in r.values("group_id")]),
+    }
+
+    d = {
+        "resource": {},
+        "command": {},
+        "group": {},
+    }
+    for q_type in ids:
+        for res in ids[q_type]:
+            d[q_type][res] = []
             for f in fields:
                 try:
-                    v = models.MetaRecord.objects.filter(resource_id=res, meta_tag=f[0], meta_name=f[1]).latest("timestamp").value
+                    if q_type == "resource":
+                        v = models.MetaRecord.objects.filter(resource_id=res, meta_tag=f[0], meta_name=f[1]).latest("timestamp").value
+                    elif q_type == "command":
+                        v = models.MetaRecord.objects.filter(command_id=res, meta_tag=f[0], meta_name=f[1]).latest("timestamp").value
+                    elif q_type == "group":
+                        v = models.MetaRecord.objects.filter(group_id=res, meta_tag=f[0], meta_name=f[1]).latest("timestamp").value
                 except:
                     v = '-'
-                d[res].append( v )
+                d[q_type][res].append( v )
 
-        return render(request, 'tabulate.html', {
-            "q": q,
-            "results": r,
-            "fields": fields,
-            "d": d,
-            "resources": resources,
-        })
-    else:
-        return HttpResponseBadRequest("Invalid query.")
+    return render(request, 'tabulate.html', {
+        "q": q,
+        "fields": fields,
+        "d": d,
+    })

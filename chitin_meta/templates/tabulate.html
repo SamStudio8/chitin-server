@@ -22,6 +22,10 @@
 
 Query: <pre>{{ q }}</pre>
 
+
+{% for q_type, q_set in d.items %}
+
+{{ q_type }}
 <div class="table-responsive">
 <table class="table table-hover table-active">
     <thead class="thead-dark">
@@ -33,7 +37,7 @@ Query: <pre>{{ q }}</pre>
         </tr>
     </thead>
     <tbody>
-        {% for r, dv in d.items %}
+        {% for r, dv in q_set.items %}
         <tr>
             <td>{{ r }}</td>
             {% for v in dv %}
@@ -44,6 +48,7 @@ Query: <pre>{{ q }}</pre>
     </tbody>
 </table>
 </div>
+{% endfor %}
 
 
 {% include 'footer.html' %}

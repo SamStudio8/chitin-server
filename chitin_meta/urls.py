@@ -9,15 +9,14 @@ urlpatterns = [
     url(r'resource/(?P<resource_uuid>[0-9a-f-]+)/$', views.detail_resource, name='detail_resource'),
     url(r'command/(?P<command_uuid>[0-9a-f-]+)/$', views.detail_command, name='detail_command'),
 
-    url(r'meta/$', views.tabulate, name='tabulate'),
-
     # API
     url(r'api/command/update/$', csrf_exempt(views.update_command), name='update_command'),
     url(r'api/command/new/$', csrf_exempt(views.new_command), name='new_command'),
-
-    url(r'api/resource/meta/$', csrf_exempt(views.tag_resource), name='tag_resource'),
+    url(r'api/resource/meta/$', csrf_exempt(views.tag_meta), name='tag_meta'),
     url(r'api/resource/group/$', csrf_exempt(views.group_resources), name='group_resources'),
 
+    #url(r'meta/(?P<q_type>[a-Z]+)/$', views.tabulate, name='tabulate'),
+    url(r'meta/$', views.tabulate, name='tabulate'),
 
     # Home
     url(r'search/$', views.search, name='search'),
